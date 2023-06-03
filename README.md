@@ -8,7 +8,7 @@ Projet 1 du cours MEC423
 - Clic droit dans le dossier, puis "Git Bash Here"
 - copier/coller la commande suivante (shift + insert):
 
-	git clone https://github.com/guimauve007/inf136_tp2.git
+	git clone https://github.com/guimauve007/MEC423_projet1.git
 
 
 ## Pour démarrer avec pycharm:
@@ -16,8 +16,7 @@ Projet 1 du cours MEC423
 - Cliquer sur 'New Project'
 - Sélectionner le dossier de projet créé précédemment et choisir 'src' comme Base Directory 
 
-
-![image](https://user-images.githubusercontent.com/96882237/222988659-cc5369e7-ca6a-4f05-9ba4-5a4d9b361609.png)
+![image](https://github.com/guimauve007/MEC423_projet1/assets/96882237/6c35a976-4ab9-4d39-a40a-fc47a7e0f937)
 
 - Cliquer sur 'Create', puis 'Create from Existing Sources'
 - Aller dans Python Packages puis installer les dépendances du projet, soit 'numpy' et 'matplotlib'
@@ -30,7 +29,7 @@ Cliquer sur commit:
 
 Entrer votre message puis cliquer sur commit and Push... :
 
-![image](https://user-images.githubusercontent.com/96882237/222988250-1630bb5b-a338-4211-a053-8bdde487f534.png)
+![image](https://github.com/guimauve007/MEC423_projet1/assets/96882237/f3be6b1f-68a3-4d46-93cc-4d01c9acc53e)
 
 	
 ## Pour importer (pull) et mettre à jour votre projet à partir du git:
