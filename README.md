@@ -7,9 +7,9 @@ Projet 1 du cours MEC423
 - Ouvrir un dossier de projet sur votre ordinateur
 - Clic droit dans le dossier, puis "Git Bash Here"
 - copier/coller la commande suivante (shift + insert):
-
+```sh
 	git clone https://github.com/guimauve007/MEC423_projet1.git
-
+```
 
 ## Pour démarrer avec pycharm:
 - Ouvrir PyCharm Community
