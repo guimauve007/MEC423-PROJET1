@@ -3,8 +3,8 @@ from numpy.linalg import solve
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 
-Resoudre = True # Resoudre = False pour vérifier, Resoudre = True pour résoudre
-pi = np.pi # Nombre 3.14159...
+Resoudre = True  # Resoudre = False pour vérifier, Resoudre = True pour résoudre
+pi = np.pi  # Nombre 3.14159...
 
 # gabarit pour solution avec éléments finis triangulaires axisymétriques
 #  1) définir les paramètres du problème (géométrie, matériau, chargement)
@@ -19,48 +19,50 @@ pi = np.pi # Nombre 3.14159...
 #  9) assemblage chargement dû au flux de chaleur (ijflux)
 # 10) Solution et visualisation des résultats
 
-## Paramètres facultatifs (géométrie, matériaux, conditions frontières)
-ri = 0.045
-r = 0.05
-rm = (ri+r)/2
-b = 0.02
-e2 = 0.001
-L = 4
-N = 600
-s2 = L/(2*N)
-y3 = e2 + (s2-e2)/4
-y4 = e2 + (s2-e2)/2
+# Paramètres facultatifs (géométrie, matériaux, conditions frontières)
+re_tube = 0.05  # rayon extérieur tube
+e_tube = re_tube/5  # épaisseur tube
+ri_tube = re_tube - e_tube  # rayon intérieur tube
+rm_tube = (ri_tube + re_tube) / 2  # rayon moyen tube
+long_ailette = 0.025  # longueur ailette
+e_ailette = long_ailette / 200  # épaisseur ailette
+long_tube = 4.5  # longueur tube
+nb_ailettes = 1000  # nb d'ailettes
+s2 = long_tube / (2 * nb_ailettes)  # épaisseur d'une moitié de segment (s/2)
+y3 = e_ailette + (s2 - e_ailette) / 4
+y4 = e_ailette + (s2 - e_ailette) / 2
 k1 = 150
-k2 = 160
-P = 50000
-si = P/(2*3.1415926535*ri*L)
+P = 7000
+si = P/(2 * pi * ri_tube * long_tube)
+h_conv = 20.0 # coefficient de convection
+t_air = 45.0 # temperature de l'air
 
-## Coordonnées des noeuds
-xy=np.array([[ri,0],[ri, e2],[ri, y3],[ri, y4],[ri, s2],
-              [rm, 0],[rm, e2],[rm, y3],[rm, y4],[rm, s2],
-              [r, 0],[r, e2],[r, y3],[r, y4],[r, s2],
-              [r+(b/4), 0],[r+(b/4), e2],[r+(b/2), 0],[r+(b/2), e2],
-              [r+3*(b/4), 0],[r+3*(b/4), e2],[r+b, 0],[r+b, e2]]) # 2 coordonnées x et y par noeud
+# Coordonnées des noeuds
+xy = np.array([[ri_tube, 0], [ri_tube, e_ailette], [ri_tube, y3], [ri_tube, y4], [ri_tube, s2],
+               [rm_tube, 0], [rm_tube, e_ailette], [rm_tube, y3], [rm_tube, y4], [rm_tube, s2],
+               [re_tube, 0], [re_tube, e_ailette], [re_tube, y3], [re_tube, y4], [re_tube, s2],
+               [re_tube + (long_ailette / 4), 0], [re_tube + (long_ailette / 4), e_ailette], [re_tube + (long_ailette / 2), 0], [re_tube + (long_ailette / 2), e_ailette],
+               [re_tube + 3 * (long_ailette / 4), 0], [re_tube + 3 * (long_ailette / 4), e_ailette], [re_tube + long_ailette, 0], [re_tube + long_ailette, e_ailette]]) # 2 coordonnées x et y par noeud
 
 
-## Connectivités des éléments
-cn=np.array([[1, 2, 7], [1, 6, 7], [2, 3, 8], [2, 7, 8], [3, 4, 9], [3, 8, 9], [4, 5, 10], [4, 9, 10],
+# Connectivités des éléments
+cn = np.array([[1, 2, 7], [1, 6, 7], [2, 3, 8], [2, 7, 8], [3, 4, 9], [3, 8, 9], [4, 5, 10], [4, 9, 10],
               [6, 7, 12], [6, 11, 12], [7, 8, 13], [7, 12, 13], [8, 9, 14], [8, 13, 14], [9, 10, 15], [9, 14, 15],
               [11, 12, 17], [11, 16, 17], [16, 17, 19], [16, 18, 19], [18, 19, 21], [18, 20, 21], [20, 21, 23], [20, 22, 23]]) # 3 no de noeuds par élément
 
-## Propriétés matériaux
+# Propriétés matériaux
 kc = np.array([k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1, k1,
-               k2, k2, k2, k2, k2, k2, k2, k2]) # une valeur par élément
+               k1, k1, k1, k1, k1, k1, k1, k1]) # une valeur par élément
 
-## Chaleur volumique (W/m3) si la pièce conduit un courant électrique
+# Chaleur volumique (W/m3) si la pièce conduit un courant électrique
 Q = 0
 
-## Frontières de flux de chaleur
+# Frontières de flux de chaleur
 ijflux = np.array([[1, 2, si], [2, 3, si], [3, 4, si], [4, 5, si]])
 
-## Frontières de convection
-ijhTf=np.array([[14, 15, 20.0, 22.0], [13, 14, 20.0, 22.0], [12, 13, 20.0, 22.0], [12, 17, 20.0, 22.0], [17, 19, 20.0, 22.0],
-                [19, 21, 20.0, 22.0], [21, 23, 20.0, 22.0], [22, 23, 20.0, 22.0]])
+# Frontières de convection
+ijhTf=np.array([[14, 15, h_conv, t_air], [13, 14, h_conv, t_air], [12, 13, h_conv, t_air], [12, 17, h_conv, t_air], [17, 19, h_conv, t_air],
+                [19, 21, h_conv, t_air], [21, 23, h_conv, t_air], [22, 23, h_conv, t_air]])
 
 # Fin des données
 # --------------------------------------------------
@@ -68,7 +70,7 @@ ijhTf=np.array([[14, 15, 20.0, 22.0], [13, 14, 20.0, 22.0], [12, 13, 20.0, 22.0]
 nn = xy.shape[0] # nombre de noeuds (1 ddl / noeud)
 ne= cn.shape[0] # nombre d'éléments
 
-## Visualiser le maillage pour vérifier
+# Visualiser le maillage pour vérifier
 plt.figure(1)# hold on, axis equal
 for ie in range(0,ne):
     nijk = cn[ie,:]
@@ -117,6 +119,10 @@ if Resoudre:
     # Initialisation
     kg = np.zeros((nn,nn))
     fg = np.zeros(nn)
+
+    # Calcul du cout de fabrication
+    cout = 2 * 10 ** 4 * long_tube * re_tube ** 2 + 1000 * nb_ailettes * long_ailette * ((re_tube+long_ailette)**2 - re_tube**2) + 3*nb_ailettes**(1/2)
+    print('Cout total: ', cout)
 
     # Calcul des matrices de conduction et des charges volumiques
     for ie in range(0,ne):
